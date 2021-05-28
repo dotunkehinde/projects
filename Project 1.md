@@ -1,1 +1,1 @@
-## LAMP STACK
+## LAMP STACk
