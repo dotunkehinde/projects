@@ -35,7 +35,8 @@ A technology stack is a set of frameworks and tools used to develop a software p
 - Ran ```$ sudo mkdir /var/www/projectlamp``` to create a new directory in /var/www
 - Assigned ownership of the directory to current user (me) using environment variable $USER ```$ sudo chown -R $USER:$USER /var/www/projectlamp```
 - Created and opened new configuration file using ```$ sudo vi /etc/apache2/sites-available/projectlamp.conf```
-```<VirtualHost *:80>
+```
+<VirtualHost *:80>
     ServerName projectlamp
     ServerAlias www.projectlamp 
     ServerAdmin webmaster@localhost
@@ -49,13 +50,15 @@ A technology stack is a set of frameworks and tools used to develop a software p
 - Tested config file to make sure it contains no errors ```sudo apache2ctl configtest```
 - Reloaded Apache2 so that changes can take effect ```sudo systemctl reload apache2```
 - Created and index.html file for projectlamp   
-```sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
+```
+sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
 ```
 ![projectlamp index](https://user-images.githubusercontent.com/20668013/120053247-1b55e580-c021-11eb-831c-7baf27d5662f.JPG)
 
 ## Step 5 — Enable PHP on the website
 - Edited the order of index files to give php precedence. ```sudo vim /etc/apache2/mods-enabled/dir.conf```
-``` <IfModule mod_dir.c>
+``` 
+<IfModule mod_dir.c>
         #Change this:
         #DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
         #To this:
@@ -64,9 +67,11 @@ A technology stack is a set of frameworks and tools used to develop a software p
 ```
 - Reloaded Apache so that changes could take effect ```sudo systemctl reload apache2```
 - Created a new file to test that PHP is working fine ```vim /var/www/projectlamp/index.php```
-```<?php
+```
+<?php
 phpinfo();
 ```
+![php v](https://user-images.githubusercontent.com/20668013/120054336-46dbce80-c027-11eb-88aa-1f43d0edffc2.JPG)
 
 
 
