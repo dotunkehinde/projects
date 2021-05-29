@@ -5,7 +5,7 @@ A technology stack is a set of frameworks and tools used to develop a software p
 
 ## Step 0 - Preparing prerequisites
 - Opened an Amazon Web Services Account
-- Launched an instance of Ubuntu Server 20.04 LTS, located at [Public IPv4 DNS](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
+- Launched an instance of Ubuntu Server 20.04 LTS
 ![AWS - Launch Instance](https://user-images.githubusercontent.com/20668013/120049794-0bcfa000-c013-11eb-9c42-25ab7012f931.JPG)
 - Logged in to the AWS EC2 instance with putty.
 ![putty](https://user-images.githubusercontent.com/20668013/120050737-ea23e800-c015-11eb-9531-cabff39ada8a.JPG)
@@ -72,6 +72,8 @@ sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/met
 phpinfo();
 ```
 ![php v](https://user-images.githubusercontent.com/20668013/120054336-46dbce80-c027-11eb-88aa-1f43d0edffc2.JPG)
+
+#### To access this project, please click [here!](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
 
 
 
