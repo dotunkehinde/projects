@@ -1,9 +1,12 @@
-# WEB STACK IMPLEMENTATIONN (LAMP STACK) IN AWS
+# WEB STACK IMPLEMENTATION (LEMP STACK)
 
 ## Introduction
-A technology stack is a set of frameworks and tools used to develop a software product. This projects sets up Linux, Apache, MySQL, and PHP on an Ubuntu Instance in AWS.
+This project will install the NGINX Webserver. 
 
 ## Step 0 - Preparing prerequisites
+- Downloaded and installed Git Bash. 
+
+
 - Opened an Amazon Web Services Account
 - Launched an instance of Ubuntu Server 20.04 LTS
 ![AWS - Launch Instance](https://user-images.githubusercontent.com/20668013/120049794-0bcfa000-c013-11eb-9c42-25ab7012f931.JPG)
