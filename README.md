@@ -1,2 +1,2 @@
-# projects
+# DevOps Projects
 DevOps Engineering Projects
