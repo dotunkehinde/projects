@@ -5,76 +5,105 @@ This project will install the NGINX Webserver.
 
 ## Step 0 - Preparing prerequisites
 - Downloaded and installed Git Bash. 
-
-
-- Opened an Amazon Web Services Account
 - Launched an instance of Ubuntu Server 20.04 LTS
-![AWS - Launch Instance](https://user-images.githubusercontent.com/20668013/120049794-0bcfa000-c013-11eb-9c42-25ab7012f931.JPG)
-- Logged in to the AWS EC2 instance with putty.
-![putty](https://user-images.githubusercontent.com/20668013/120050737-ea23e800-c015-11eb-9531-cabff39ada8a.JPG)
+- Logged in to the AWS EC2 instance with git bash.  
+![gitbash login](https://user-images.githubusercontent.com/20668013/120398278-cd4b2580-c331-11eb-85b4-fbcd0d275e61.JPG)
 
-## Step 1 — Installing Apache and Updating the Firewall
- - Updated my list of packages with ```$ sudo apt update``` command.
-  ![apt update](https://user-images.githubusercontent.com/20668013/120051581-1d1bab00-c019-11eb-8745-3a29a2814f8f.JPG)
- - Installed Apache with the ``` $ sudo apt install apache2 ``` command
- - Verified that Apache2 is running using ``` $ sudo systemctl status apache2```
-![apache verify](https://user-images.githubusercontent.com/20668013/120051742-bc40a280-c019-11eb-91d9-0e0c4e29a4a6.JPG)
-- Edited inbound rules to include http on port 80 with source from anywhere.
-- Verified that Apache is accessible through my firewall
-![Apache2 Default Page](https://user-images.githubusercontent.com/20668013/120052120-9916f280-c01b-11eb-9c12-1031a36f38f0.JPG)
+## Step 1 – Installing the Nginx Web Server
+- Ran ```sudo apt update``` and ```sudo apt install nginx``` to install nginx.
+- Verified that nginx was successfully installed by runnign ```sudo systemctl status nginx```  
+![nginx running](https://user-images.githubusercontent.com/20668013/120398548-61b58800-c332-11eb-826a-c5d47825d293.JPG)
+- Opened TCP port 80 in security group.
+- ```http://18.117.187.158/```  
+- ![nginx welc](https://user-images.githubusercontent.com/20668013/120399174-67f83400-c333-11eb-858e-cddd662a2d5e.JPG)
 
 ## Step 2 — Installing MySQL
 - Installed MySQL using apt ```$ sudo apt install mysql-server```.
 - Installed MySQL Secure Installation ```$ sudo mysql_secure_installation```
-- Logged in to MySQL 
- ![mysql](https://user-images.githubusercontent.com/20668013/120052516-9d440f80-c01d-11eb-8f73-f72f5c5368af.JPG)
- 
+- Logged in to MySQL  
+- ![mysql2](https://user-images.githubusercontent.com/20668013/120399738-87439100-c334-11eb-84c4-b3cd1465296a.JPG)
+
  ## Step 3 — Installing PHP
-- Installed PHP ```$ sudo apt install php libapache2-mod-php php-mysql```
-- Verified installation of PHP ```$ php -v```
+- Installed PHP ```$ sudo apt install php-fpm php-mysql ```
+- Verified installation of PHP ```$ php -v```  
 ![php verify](https://user-images.githubusercontent.com/20668013/120052716-7cc88500-c01e-11eb-9c84-6bd0162a594b.JPG)
 
-## Step 4 — Creating a Virtual Host for your Website using Apache
-- Ran ```$ sudo mkdir /var/www/projectlamp``` to create a new directory in /var/www
-- Assigned ownership of the directory to current user (me) using environment variable $USER ```$ sudo chown -R $USER:$USER /var/www/projectlamp```
-- Created and opened new configuration file using ```$ sudo vi /etc/apache2/sites-available/projectlamp.conf```
+## Step 4 — Configuring Nginx to Use PHP Processor
+- Created root folder for our new domain as follows:
 ```
-<VirtualHost *:80>
-    ServerName projectlamp
-    ServerAlias www.projectlamp 
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/projectlamp
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost> 
-```  
-- Enabled the new Virtual Host ```$ sudo a2ensite projectlamp``` 
-- Disabled defaule website ``` $ sudo a2dissite 000-default ```
-- Tested config file to make sure it contains no errors ```sudo apache2ctl configtest```
-- Reloaded Apache2 so that changes can take effect ```sudo systemctl reload apache2```
-- Created and index.html file for projectlamp   
+sudo mkdir /var/www/projectLEMP
 ```
-sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
+- Assigned ownership of the directory with the $USER environment variable
 ```
-![projectlamp index](https://user-images.githubusercontent.com/20668013/120053247-1b55e580-c021-11eb-831c-7baf27d5662f.JPG)
+sudo chown -R $USER:$USER /var/www/projectLEMP
+```
+- Opened a new configuration file in Nginx's directory using the nano text editor
+```
+sudo nano /etc/nginx/sites-available/projectLEMP
+```
+```
+#/etc/nginx/sites-available/projectLEMP
 
-## Step 5 — Enable PHP on the website
-- Edited the order of index files to give php precedence. ```sudo vim /etc/apache2/mods-enabled/dir.conf```
-``` 
-<IfModule mod_dir.c>
-        #Change this:
-        #DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
-        #To this:
-        DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
-</IfModule>
+server {
+    listen 80;
+    server_name projectLEMP www.projectLEMP;
+    root /var/www/projectLEMP;
+
+    index index.html index.htm index.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+     }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+}
 ```
-- Reloaded Apache so that changes could take effect ```sudo systemctl reload apache2```
-- Created a new file to test that PHP is working fine ```vim /var/www/projectlamp/index.php```
+- Activated configuration by linking to the config file from Nginx Directory
+```
+$ sudo ln -s /etc/nginx/sites-available/projectLEMP /etc/nginx/sites-enabled/
+
+```
+- Tested Nginx configuraton using ``` sudo nginx -t ```
+![nginx verify](https://user-images.githubusercontent.com/20668013/120401083-1c478980-c337-11eb-9a81-2b2ef49eb584.JPG)
+- Disabled default Nginx host 
+``` 
+sudo unlink /etc/nginx/sites-enabled/default
+```
+- Reloaded Nginx to apply changes
+```
+sudo systemctl reload nginx
+```
+- Created an index.html file
+``` http://18.117.187.158/ ```
+![hello lemp](https://user-images.githubusercontent.com/20668013/120401422-d2ab6e80-c337-11eb-9d09-95a870d76024.JPG)
+
+## Step 5 – Testing PHP with Nginx
+- Created a php file in document root
+```
+nano /var/www/projectLEMP/info.php
+```
 ```
 <?php
 phpinfo();
 ```
-![php v](https://user-images.githubusercontent.com/20668013/120054336-46dbce80-c027-11eb-88aa-1f43d0edffc2.JPG)
+```
+http://18.117.187.158/info.php
+```
+![phpinfo](https://user-images.githubusercontent.com/20668013/120402058-2b2f3b80-c339-11eb-9f4e-5bc11d5de8c5.JPG)
+- Removed php configuration file or security reasons.
+```
+ sudo rm /var/www/your_domain/info.php
+```
+## Step 6 — Retrieving data from MySQL database with PHP
+
 
 #### To access this project, please click [here!](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
 
