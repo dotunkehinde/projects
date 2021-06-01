@@ -71,7 +71,7 @@ server {
 $ sudo ln -s /etc/nginx/sites-available/projectLEMP /etc/nginx/sites-enabled/
 
 ```
-- Tested Nginx configuraton using ``` sudo nginx -t ```
+- Tested Nginx configuraton using ``` sudo nginx -t ```  
 ![nginx verify](https://user-images.githubusercontent.com/20668013/120401083-1c478980-c337-11eb-9a81-2b2ef49eb584.JPG)
 - Disabled default Nginx host 
 ``` 
@@ -81,8 +81,8 @@ sudo unlink /etc/nginx/sites-enabled/default
 ```
 sudo systemctl reload nginx
 ```
-- Created an index.html file
-``` http://18.117.187.158/ ```
+- Created an index.html file  
+- ``` http://18.117.187.158/ ```
 ![hello lemp](https://user-images.githubusercontent.com/20668013/120401422-d2ab6e80-c337-11eb-9d09-95a870d76024.JPG)
 
 ## Step 5 – Testing PHP with Nginx
@@ -103,6 +103,7 @@ http://18.117.187.158/info.php
  sudo rm /var/www/your_domain/info.php
 ```
 ## Step 6 — Retrieving data from MySQL database with PHP
+- 
 
 
 #### To access this project, please click [here!](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
