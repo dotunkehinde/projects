@@ -72,5 +72,3 @@ sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/met
 phpinfo();
 ```
 ![php v](https://user-images.githubusercontent.com/20668013/120054336-46dbce80-c027-11eb-88aa-1f43d0edffc2.JPG)
-
-#### To access this project, please click [here!](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
