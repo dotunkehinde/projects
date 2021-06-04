@@ -102,7 +102,7 @@ node index.js
 ```
 ![server-running](https://user-images.githubusercontent.com/20668013/120840191-cf93c680-c561-11eb-9a97-773dd05be336.JPG)
 - Edited EC2 Security Gorups and created an inbound rule to open TCP port 5000
-- Typed ``` http://18.224.43.99:5000 ``` in browswer window
+- Typed ``` http://18.224.43.99:5000 ``` in browswer window  
 ![Welcome Express](https://user-images.githubusercontent.com/20668013/120840747-8728d880-c562-11eb-95e4-36206c6c57b3.JPG)
 
 ### Routes
@@ -232,12 +232,70 @@ module.exports = router;
 ```
 ### MongoDB Database
 
+- Created an account on Mongodb.com  
+![mongodb](https://user-images.githubusercontent.com/20668013/120846533-29988a00-c56a-11eb-9ddd-c98f7f786e76.JPG)
+- Created a file in Todo directory with the name ```.env```
+```
+touch .env
+vi .env
+```
+- Updated index.js file to reflect the use of ```.env``` so that Node.js can connect to the database.
+- Deleted the existing content of the file and updated it with the code below
 
+```
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const routes = require('./routes/api');
+const path = require('path');
+require('dotenv').config();
 
+const app = express();
 
+const port = process.env.PORT || 5000;
 
+//connect to the database
+mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
+.then(() => console.log(`Database connected successfully`))
+.catch(err => console.log(err));
 
+//since mongoose promise is depreciated, we overide it with node's promise
+mongoose.Promise = global.Promise;
 
+app.use((req, res, next) => {
+res.header("Access-Control-Allow-Origin", "\*");
+res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+next();
+});
+
+app.use(bodyParser.json());
+
+app.use('/api', routes);
+
+app.use((err, req, res, next) => {
+console.log(err);
+next();
+});
+
+app.listen(port, () => {
+console.log(`Server running on port ${port}`)
+});
+```
+- Started server using ``` node index.js```  
+![tododb connect](https://user-images.githubusercontent.com/20668013/120850167-f99fb580-c56e-11eb-8ae9-5e64add0d993.JPG)
+
+### Testing Backend Code without Frontend using RESTful API
+- Downloaded and installed Postman to test our API.
+- Opened Postman and created a POST request to the API
+```
+http://<PublicIP-or-PublicDNS>:5000/api/todos
+```
+- I set header key ```Content-Type``` as ```application/json```
+- Posted ``` http://18.224.43.99:5000/api/todos ```
+![postman](https://user-images.githubusercontent.com/20668013/120853002-f1497980-c572-11eb-94ca-9af91db613fc.JPG)
+- Created a GET request to my API on ``` http://18.224.43.99:5000/api/todos ```  
+This request will retrieve all existing records from the database of our To-do application 
+![postman2](https://user-images.githubusercontent.com/20668013/120853597-d6c3d000-c573-11eb-8029-fd63c4284eae.JPG)
 
 ## Step 2 — Installing MySQL
 - Installed MySQL using apt ```$ sudo apt install mysql-server```.
