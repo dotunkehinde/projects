@@ -1,27 +1,243 @@
-# WEB STACK IMPLEMENTATION (LEMP STACK)
+# Simple To-Do application on MERN Web Stack
 
 ## Introduction
-This project will install the NGINX Webserver. 
+This project implements a web solution based on MERN stack in AWS Cloud. A MERN Web stack comprises of MongoDB, ExpressJS, ReactJS, and Node.js. 
+
+### Task
+Our task is to build a simple ToDo application that creates ToDo lists. 
 
 ## Step 0 - Preparing prerequisites
-- Downloaded and installed Git Bash. 
+- Created a new EC2 instance with Ubuntu Server 20.04 LTS (HVM). 
+- Downloaded MobaXterm, a multitool terminal for Windows. 
+- I connected to my new EC2 instance through MobaXterm
+![moboxterm](https://user-images.githubusercontent.com/20668013/120836773-d8829900-c55d-11eb-87d5-e1e41b9cd7ed.JPG)
+
+## Step 1 - Backend configuration
+ - Updated my list of packages.
+ ```
+ $ sudo apt update  
+ ``` 
+ - Upgraded Ubuntu
+ ```
+ sudo apt upgrade
+ ```
+ - Got the location of the Node.js software from the Ubuntu repositories
+
+```
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+```
+### Install Node.js on the server
+- Installed Node.js with the command below
+```
+sudo apt-get install -y nodejs
+```
+This installs both Node.js and NPM, a package manager for installing Node packages and manage dependency conflicts.
+- Verified the installation with the command below  
+``` 
+node -v 
+```
+```
+npm -v 
+```
+![verify node](https://user-images.githubusercontent.com/20668013/120838187-70cd4d80-c55f-11eb-9f1d-b3fd7e03a556.JPG)
+
+### Application Code Setup
+- Created a new directory for our To-Do project
+```
+mkdir Todo
+```
+- Changed directory to the newly created ToDo directory
+```
+cd Todo
+```
+- Initialized the project with the command below
+```
+npm init
+```
+![initialize nodejs](https://user-images.githubusercontent.com/20668013/120839028-5f387580-c560-11eb-8754-3d5dd4a316bf.JPG)
+
+### Install ExpressJS
+- Installed express using npm
+```
+npm install express
+```
+- Created index.js with the command below
+```
+touch index.js
+```
+- Installed the 'dotdev' module with the code below
+```
+npm install dotenv
+```
+- Opened the index.js file with the command below
+```
+vim index.js
+```
+- Typed the code below into index.js
+```
+const express = require('express');
+require('dotenv').config();
+
+const app = express();
+
+const port = process.env.PORT || 5000;
+
+app.use((req, res, next) => {
+res.header("Access-Control-Allow-Origin", "\*");
+res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+next();
+});
+
+app.use((req, res, next) => {
+res.send('Welcome to Express');
+});
+
+app.listen(port, () => {
+console.log(`Server running on port ${port}`)
+});
+```
+- Started server with the command below
+```
+node index.js
+```
+![server-running](https://user-images.githubusercontent.com/20668013/120840191-cf93c680-c561-11eb-9a97-773dd05be336.JPG)
+- Edited EC2 Security Gorups and created an inbound rule to open TCP port 5000
+- Typed ``` http://18.224.43.99:5000 ``` in browswer window
+![Welcome Express](https://user-images.githubusercontent.com/20668013/120840747-8728d880-c562-11eb-95e4-36206c6c57b3.JPG)
+
+### Routes
+Our To-Do application needs to be able to 
+1. Create a new task
+2. Display a list of all tasks
+3. Delete a completed task
+
+Each task will be associated with some particular endpoint and will use different standard HTTP request methods; POST, GET, DELETE
+
+For each task, we need to create routes that will define various endpoints that the To-Do app will depend on. We need to create a folder for the routes
+
+- Created routes folder with the command below
+```
+mkdir routes
+```
+- Changed to the routes folder
+``` 
+cd routes
+```
+- Created a file api.js with the command below
+```
+touch api.js
+```
+- Opened created file with the command below
+```
+vim api.js
+```
+- Copied the code below into the file
+```
+const express = require ('express');
+const router = express.Router();
+
+router.get('/todos', (req, res, next) => {
+
+});
+
+router.post('/todos', (req, res, next) => {
+
+});
+
+router.delete('/todos/:id', (req, res, next) => {
+
+})
+
+module.exports = router;
+```
+### Models
+To create a Schema and a model, I installed mongoose a Node.js package that makes it easier to work with mongodb.
+
+- Changed directory back to the Todo folder and install Mongoose
+```
+cd ..
+```
+```
+npm install mongoose
+```
+- Created a new folder called models and changed directory to newly created one.
+```
+mkdir models
+```
+```
+cd models
+```
+- Created a file called todo.js inside the models folder
+``` 
+touch todo.js
+```
+#### Note
+All three commands above can be defined in one line as shown below
+```
+mkdir models && cd models && touch todo.js
+```
+- Opened the created file using ``` vim todo.js``` and pasted the code below into it.
+```
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+//create schema for todo
+const TodoSchema = new Schema({
+action: {
+type: String,
+required: [true, 'The todo text field is required']
+}
+})
+
+//create model for todo
+const Todo = mongoose.model('todo', TodoSchema);
+
+module.exports = Todo;
+```
+We now need to update our routes from the file api.js in 'routes' directory to make use of the new model.
+- Opened api.js in the Routes directory with ``` vim api.js```
+- Deleted the code inside with ```:%d``` and replaced it with the code below
+```
+const express = require ('express');
+const router = express.Router();
+const Todo = require('../models/todo');
+
+router.get('/todos', (req, res, next) => {
+
+//this will return all the data, exposing only the id and action field to the client
+Todo.find({}, 'action')
+.then(data => res.json(data))
+.catch(next)
+});
+
+router.post('/todos', (req, res, next) => {
+if(req.body.action){
+Todo.create(req.body)
+.then(data => res.json(data))
+.catch(next)
+}else {
+res.json({
+error: "The input field is empty"
+})
+}
+});
+
+router.delete('/todos/:id', (req, res, next) => {
+Todo.findOneAndDelete({"_id": req.params.id})
+.then(data => res.json(data))
+.catch(next)
+})
+
+module.exports = router;
+```
+### MongoDB Database
 
 
-- Opened an Amazon Web Services Account
-- Launched an instance of Ubuntu Server 20.04 LTS
-![AWS - Launch Instance](https://user-images.githubusercontent.com/20668013/120049794-0bcfa000-c013-11eb-9c42-25ab7012f931.JPG)
-- Logged in to the AWS EC2 instance with putty.
-![putty](https://user-images.githubusercontent.com/20668013/120050737-ea23e800-c015-11eb-9531-cabff39ada8a.JPG)
 
-## Step 1 — Installing Apache and Updating the Firewall
- - Updated my list of packages with ```$ sudo apt update``` command.
-  ![apt update](https://user-images.githubusercontent.com/20668013/120051581-1d1bab00-c019-11eb-8745-3a29a2814f8f.JPG)
- - Installed Apache with the ``` $ sudo apt install apache2 ``` command
- - Verified that Apache2 is running using ``` $ sudo systemctl status apache2```
-![apache verify](https://user-images.githubusercontent.com/20668013/120051742-bc40a280-c019-11eb-91d9-0e0c4e29a4a6.JPG)
-- Edited inbound rules to include http on port 80 with source from anywhere.
-- Verified that Apache is accessible through my firewall
-![Apache2 Default Page](https://user-images.githubusercontent.com/20668013/120052120-9916f280-c01b-11eb-9c12-1031a36f38f0.JPG)
+
+
+
+
 
 ## Step 2 — Installing MySQL
 - Installed MySQL using apt ```$ sudo apt install mysql-server```.
