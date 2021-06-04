@@ -291,73 +291,358 @@ console.log(`Server running on port ${port}`)
 http://<PublicIP-or-PublicDNS>:5000/api/todos
 ```
 - I set header key ```Content-Type``` as ```application/json```
-- Posted ``` http://18.224.43.99:5000/api/todos ```
+- Created a POST request ``` http://18.224.43.99:5000/api/todos ```
 ![postman](https://user-images.githubusercontent.com/20668013/120853002-f1497980-c572-11eb-94ca-9af91db613fc.JPG)
 - Created a GET request to my API on ``` http://18.224.43.99:5000/api/todos ```  
 This request will retrieve all existing records from the database of our To-do application 
 ![postman2](https://user-images.githubusercontent.com/20668013/120853597-d6c3d000-c573-11eb-8029-fd63c4284eae.JPG)
+- Created a DELETE request to my API on ``` http://18.224.43.99:5000/api/todos/<id> ```
+## Step 2 - Frontend Creation
+In this step, we are going to create a user interface for a Web client to interact with the application via API.
+- Changed directory to the Todo folder ```cd Todo ``` and ran the code below 
+```
+npx create-react-app client
+```
+### Running a React App
+Installed some dependencies that need to be installed. 
+1. Concurrently is used to run more than one command simultaneosly for the same terminal window.
+```
+npm install concurrently --save-dev
+```
+2. Intalled nodemon. Nodemon is used to run and monitor the server. If there is any change in the server code, nodemon will restart it automatically and load the new changes.
+```
+npm install nodemon --save-dev
+```
+3. In Todo folder, opened the ```package.json``` file. Changed the highlighted part of the screenshot below and replaced it with the code that appears below it.   
+![packagejson](https://user-images.githubusercontent.com/20668013/120867697-5ceb1100-c58a-11eb-9449-cc6fb7cfd9c6.JPG)
+```
+"scripts": {
+"start": "node index.js",
+"start-watch": "nodemon index.js",
+"dev": "concurrently \"npm run start-watch\" \"cd client && npm start\""
+},
+```
 
-## Step 2 — Installing MySQL
-- Installed MySQL using apt ```$ sudo apt install mysql-server```.
-- Installed MySQL Secure Installation ```$ sudo mysql_secure_installation```
-- Logged in to MySQL 
- ![mysql](https://user-images.githubusercontent.com/20668013/120052516-9d440f80-c01d-11eb-8f73-f72f5c5368af.JPG)
+### Configure Proxy in ```package.json```
+1. Changed directory to 'client'
+```
+cd client
+```
+2. Opened the ```package.json``` file
+
+```
+vi package.json
+```
+3. Added the key value pair in the package.json file ``` "proxy": "http://localhost:5000" ```
+This enables us to be able to access the application directly from the browser by simly calling the server url like ``` http://localhost:5000``` rather than always including the entire path like ```http://localhost:5000/api/todos
+
+4. Ran the code below ensuring I was inside the Todo folder.
+```
+npm run dev
+```
+![complied succesfully](https://user-images.githubusercontent.com/20668013/120868899-fca99e80-c58c-11eb-89ec-5d6a9e29ca3e.JPG)
+
+5. Added new inboud rule in EC2 security group to allow inbound TCP connections on port 3000
+6. Entered ``` http://18.224.43.99:3000/ ``` on browser window  
+
+![reactapp](https://user-images.githubusercontent.com/20668013/120868992-3c708600-c58d-11eb-97ea-7d296f28d180.JPG)
+
+### Creating your React Components
+- Changed directory to client
+```
+cd client
+```
+- Moved to the src directory
+```
+cd src
+```
+- Created another folder called components in the src folder
+```
+mkdir components
+```
+- Moved into the components directory with 
+```
+cd components
+```
+- Created three files inside the components directory namely; ```Input.js```, ```ListTodo.js```, and ```Todo.js```
+```
+touch Input.js ListTodo.js Todo.js
+```
+- Opened ```Input.js```
+```
+vi Input.js
+```
+- Pasted the following code into Input.js
+```
+import React, { Component } from 'react';
+import axios from 'axios';
+
+class Input extends Component {
+
+state = {
+action: ""
+}
+
+addTodo = () => {
+const task = {action: this.state.action}
+
+    if(task.action && task.action.length > 0){
+      axios.post('/api/todos', task)
+        .then(res => {
+          if(res.data){
+            this.props.getTodos();
+            this.setState({action: ""})
+          }
+        })
+        .catch(err => console.log(err))
+    }else {
+      console.log('input field required')
+    }
+
+}
+
+handleChange = (e) => {
+this.setState({
+action: e.target.value
+})
+}
+
+render() {
+let { action } = this.state;
+return (
+<div>
+<input type="text" onChange={this.handleChange} value={action} />
+<button onClick={this.addTodo}>add todo</button>
+</div>
+)
+}
+}
+
+export default Input
+```
+- Installed axios in the ```clients``` folder
+```
+npm install axios
+```
+- Pasted the following code into ```ListTodo.js``` in the ```Todo/clients/src/components``` folder
+```
+import React from 'react';
+
+const ListTodo = ({ todos, deleteTodo }) => {
+
+return (
+<ul>
+{
+todos &&
+todos.length > 0 ?
+(
+todos.map(todo => {
+return (
+<li key={todo._id} onClick={() => deleteTodo(todo._id)}>{todo.action}</li>
+)
+})
+)
+:
+(
+<li>No todo(s) left</li>
+)
+}
+</ul>
+)
+}
+
+export default ListTodo
+```
+- Pasted the code below into the ```Todo.js``` folder
+```
+import React, {Component} from 'react';
+import axios from 'axios';
+
+import Input from './Input';
+import ListTodo from './ListTodo';
+
+class Todo extends Component {
+
+state = {
+todos: []
+}
+
+componentDidMount(){
+this.getTodos();
+}
+
+getTodos = () => {
+axios.get('/api/todos')
+.then(res => {
+if(res.data){
+this.setState({
+todos: res.data
+})
+}
+})
+.catch(err => console.log(err))
+}
+
+deleteTodo = (id) => {
+
+    axios.delete(`/api/todos/${id}`)
+      .then(res => {
+        if(res.data){
+          this.getTodos()
+        }
+      })
+      .catch(err => console.log(err))
+
+}
+
+render() {
+let { todos } = this.state;
+
+    return(
+      <div>
+        <h1>My Todo(s)</h1>
+        <Input getTodos={this.getTodos}/>
+        <ListTodo todos={todos} deleteTodo={this.deleteTodo}/>
+      </div>
+    )
+
+}
+}
+
+export default Todo;
+```
+- Copy and pasted the code below into the ```App.js``` file in the ```Todo/client/src``` folder
+```
+import React from 'react';
+
+import Todo from './components/Todo';
+import './App.css';
+
+const App = () => {
+return (
+<div className="App">
+<Todo />
+</div>
+);
+}
+
+export default App;
+```
+- Pasted the code below into the ```App.css``` file in the ```Todo/client/src/``` folder
+```
+.App {
+text-align: center;
+font-size: calc(10px + 2vmin);
+width: 60%;
+margin-left: auto;
+margin-right: auto;
+}
+
+input {
+height: 40px;
+width: 50%;
+border: none;
+border-bottom: 2px #101113 solid;
+background: none;
+font-size: 1.5rem;
+color: #787a80;
+}
+
+input:focus {
+outline: none;
+}
+
+button {
+width: 25%;
+height: 45px;
+border: none;
+margin-left: 10px;
+font-size: 25px;
+background: #101113;
+border-radius: 5px;
+color: #787a80;
+cursor: pointer;
+}
+
+button:focus {
+outline: none;
+}
+
+ul {
+list-style: none;
+text-align: left;
+padding: 15px;
+background: #171a1f;
+border-radius: 5px;
+}
+
+li {
+padding: 15px;
+font-size: 1.5rem;
+margin-bottom: 15px;
+background: #282c34;
+border-radius: 5px;
+overflow-wrap: break-word;
+cursor: pointer;
+}
+
+@media only screen and (min-width: 300px) {
+.App {
+width: 80%;
+}
+
+input {
+width: 100%
+}
+
+button {
+width: 100%;
+margin-top: 15px;
+margin-left: 0;
+}
+}
+
+@media only screen and (min-width: 640px) {
+.App {
+width: 60%;
+}
+
+input {
+width: 50%;
+}
+
+button {
+width: 30%;
+margin-left: 10px;
+margin-top: 0;
+}
+}
+```
+- Pasted the code below into the ```index.css``` file in the ```Todo/client/src``` directory
+```
+body {
+margin: 0;
+padding: 0;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+sans-serif;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+box-sizing: border-box;
+background-color: #282c34;
+color: #787a80;
+}
+
+code {
+font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+monospace;
+}
+```
+- Ran ``` npm run dev ``` from the ```Todo``` directory
+
+![todoapp](https://user-images.githubusercontent.com/20668013/120870913-3204bb00-c592-11eb-9fe3-6326fde10ffa.JPG)
+
  
- ## Step 3 — Installing PHP
-- Installed PHP ```$ sudo apt install php libapache2-mod-php php-mysql```
-- Verified installation of PHP ```$ php -v```
-![php verify](https://user-images.githubusercontent.com/20668013/120052716-7cc88500-c01e-11eb-9c84-6bd0162a594b.JPG)
-
-## Step 4 — Creating a Virtual Host for your Website using Apache
-- Ran ```$ sudo mkdir /var/www/projectlamp``` to create a new directory in /var/www
-- Assigned ownership of the directory to current user (me) using environment variable $USER ```$ sudo chown -R $USER:$USER /var/www/projectlamp```
-- Created and opened new configuration file using ```$ sudo vi /etc/apache2/sites-available/projectlamp.conf```
-```
-<VirtualHost *:80>
-    ServerName projectlamp
-    ServerAlias www.projectlamp 
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/projectlamp
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost> 
-```  
-- Enabled the new Virtual Host ```$ sudo a2ensite projectlamp``` 
-- Disabled defaule website ``` $ sudo a2dissite 000-default ```
-- Tested config file to make sure it contains no errors ```sudo apache2ctl configtest```
-- Reloaded Apache2 so that changes can take effect ```sudo systemctl reload apache2```
-- Created and index.html file for projectlamp   
-```
-sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
-```
-![projectlamp index](https://user-images.githubusercontent.com/20668013/120053247-1b55e580-c021-11eb-831c-7baf27d5662f.JPG)
-
-## Step 5 — Enable PHP on the website
-- Edited the order of index files to give php precedence. ```sudo vim /etc/apache2/mods-enabled/dir.conf```
-``` 
-<IfModule mod_dir.c>
-        #Change this:
-        #DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
-        #To this:
-        DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
-</IfModule>
-```
-- Reloaded Apache so that changes could take effect ```sudo systemctl reload apache2```
-- Created a new file to test that PHP is working fine ```vim /var/www/projectlamp/index.php```
-```
-<?php
-phpinfo();
-```
-![php v](https://user-images.githubusercontent.com/20668013/120054336-46dbce80-c027-11eb-88aa-1f43d0edffc2.JPG)
-
-#### To access this project, please click [here!](ec2-18-191-149-182.us-east-2.compute.amazonaws.com)
-
-
-
-
-
-
-
 
  
 
