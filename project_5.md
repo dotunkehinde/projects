@@ -31,6 +31,9 @@ SELECT host FROM mysql.user WHERE User = 'root';
 ```
 ![mysql_con](https://user-images.githubusercontent.com/20668013/121810921-7b23d180-cc5a-11eb-8b80-11ee054e9cf7.JPG)
 - Logged back into the MySQL Client and entered the comnand below to connect to MySQL Server  
+```
+mysql -u ubuntu -h 18.222.134.42 -p
+```
 
 ![mysql login](https://user-images.githubusercontent.com/20668013/121811093-22086d80-cc5b-11eb-9e32-1613103394f1.JPG)
 
