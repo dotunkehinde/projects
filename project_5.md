@@ -40,7 +40,7 @@ mysql -u ubuntu -h 18.222.134.42 -p
 ## Challenges Encoutered
 - I had a tough time connecting to the remote MySQL server from MySQL Client. I had to add a new database user on the Server to accept connections from  the client.
 
-## MySQL Server - Client Demo
+## MySQL Server - Client Video Demo
 https://user-images.githubusercontent.com/20668013/121811895-c8557280-cc5d-11eb-8efe-825160c035bc.mp4
 
 
