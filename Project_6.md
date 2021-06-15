@@ -256,3 +256,6 @@ http://<Web-Server-Public-IP-Address>/wordpress/
 ![wp-install 3](https://user-images.githubusercontent.com/20668013/121990910-824ffa00-cd96-11eb-93ac-15833345d3f2.JPG)  
 
 ![wp-install 4](https://user-images.githubusercontent.com/20668013/121991096-e2df3700-cd96-11eb-8183-d29984667d15.JPG)
+
+## Challenges Faced 
+- I was getting an error in database connection during installation, when I tried to run the site from browser. I had to delete the `wp-config.php` file that was copied during the installation, and used the default `wp-config-sample.php` file. The `wp-config.php` file was then created after installation.
