@@ -165,7 +165,9 @@ sudo systemctl daemon-reload
 - Verified that the setup is running using `df -h`  
 ![df](https://user-images.githubusercontent.com/20668013/121979851-e072e200-cd82-11eb-8c4c-658cdb344c17.JPG)
 
-# Step 2 — Prepare the Database Server
+## Step 2 — Prepare the Database Server
+Launched a second RedHat EC2 instance that will have a role as a 'DB Server' and repeated the same steps as for the Web Server, but instead of `apps-lv` I created `db-lv` and monted it to `/db` directory instead of `/var/www/html/`
+
 
 
 
