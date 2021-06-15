@@ -238,3 +238,21 @@ exit
 ```
 ![wp-db](https://user-images.githubusercontent.com/20668013/121985958-9e9b6900-cd8d-11eb-804e-15df2fc86a1b.JPG)
 ## Step 6 — Configure WordPress to connect to remote database.
+- Opened MySQL port 3306 on DB Server EC2. I allowed access to the DB server only from the Web Server's IP address.
+- Installed MySQL client and tested that connection can be made from WebServer to DB Server using  `mysql-client`
+```
+sudo yum install mysql
+sudo mysql -u admin -p -h <DB-Server-Private-IP-address>
+```
+1. Verified that I can sucessfully execute `SHOW DATABASES` command to see a list of existing databases.
+![sh db](https://user-images.githubusercontent.com/20668013/121987100-b247cf00-cd8f-11eb-9413-e19288ffe21d.JPG)
+2. Changed permissions and configuraton so that Apache could use WordPress
+3. Enabled TCP port 80 in Inbound rules configuration for Web Server.
+4. Accesed the Webserver through a browser
+```
+http://<Web-Server-Public-IP-Address>/wordpress/
+```
+![wp-install](https://user-images.githubusercontent.com/20668013/121989965-e7a2eb80-cd94-11eb-8ed2-eb58ba241c31.JPG)  
+![wp-install 3](https://user-images.githubusercontent.com/20668013/121990910-824ffa00-cd96-11eb-93ac-15833345d3f2.JPG)  
+
+![wp-install 4](https://user-images.githubusercontent.com/20668013/121991096-e2df3700-cd96-11eb-8183-d29984667d15.JPG)
