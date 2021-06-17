@@ -81,7 +81,7 @@ sudo vi /etc/hosts
 <WebServer1-Private-IP-Address> Web1
 <WebServer2-Private-IP-Address> Web2
 ```
-- Tested the Load Balancer and it still works
+- Tested the Load Balancer and it still works!
 ![lb1](https://user-images.githubusercontent.com/20668013/122392413-c0524700-cf6b-11eb-8abb-830ecd05f729.JPG)
 
 
