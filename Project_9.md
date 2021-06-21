@@ -75,5 +75,6 @@ http://<Jenkins-Server-Public-IP-Address-or-Public-DNS-Name>:8080
 ![welcome2](https://user-images.githubusercontent.com/20668013/122703149-d6e8ee80-d248-11eb-9817-ba2e46b9e892.JPG)
 ![welcome3](https://user-images.githubusercontent.com/20668013/122703155-da7c7580-d248-11eb-9aac-865442d6fc85.JPG)
 
-
+## Challenges faced.
+I had issues in the final step because i kept getting an error message that said `Permsion Denied` on Jekins. I had to change the permision on my NFS server /mnt/apps folder to 777 berfore I was able to overcome the problem
 
