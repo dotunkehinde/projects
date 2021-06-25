@@ -211,6 +211,44 @@ http://<Web-Server-Public-IP-Address-or-Public-DNS-Name>/index.php
 - Username: myuser
 - Password: password  
 
+<<<<<<< HEAD
 
 =======
 >>>>>>> c9aa0ba6ec44437153ca7bf0eb7ac147d1da8147
+=======
+![propitix2](https://user-images.githubusercontent.com/20668013/122381783-343b2200-cf61-11eb-9186-f96b25905f29.JPG)
+
+- Tested on the other 2 webservers
+
+![image](https://user-images.githubusercontent.com/20668013/122382170-9136d800-cf61-11eb-84f8-a15108eccc72.png)
+
+![propitix4](https://user-images.githubusercontent.com/20668013/122382531-ea9f0700-cf61-11eb-923c-d556941d37f3.JPG)
+
+
+## Challenges Encountered
+
+- I had problems connecting the with my DB server. I had to edit the functions.php file from the website to point to the private IP address of my DB Server.
+
+```
+<?php 
+session_start();
+
+// connect to database
+$db = mysqli_connect('172.31.39.229', 'webaccess', 'dotman', 'tooling');
+
+// Check connection
+// if (mysqli_connect_errno()) {
+// echo "Failed to connect to MySQL: " . mysqli_connect_error();
+// exit();
+// }
+// else{
+// echo "connected";
+// }
+
+// variable declaration
+$username = "";
+```
+
+
+
+>>>>>>> 33c87a06bd8b9a08596db148deec3d395558d516
