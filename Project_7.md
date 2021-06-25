@@ -48,12 +48,17 @@ sudo vi /etc/exports
 ```
 sudo exportfs -arv
 ```
+<<<<<<< HEAD
 1. Checked which port is used by NFS and opened ports TCP/UDP 2049, and TCP/UDP 111 in Security Groups
+=======
+1. Checked which port is used by NFS and opened it using Secureity Groups
+>>>>>>> c9aa0ba6ec44437153ca7bf0eb7ac147d1da8147
 ```
 rpcinfo -p | grep nfs
 ```
 ![rpcinfo](https://user-images.githubusercontent.com/20668013/122134988-95ff6d00-ce37-11eb-8144-76b9d0f1dd3b.JPG)
 
+<<<<<<< HEAD
 ## Step 2 — Configure the database server
 - Spinned up an Ubuntu instance on AWS EC2
 - Installed MySQL server 
@@ -207,3 +212,5 @@ http://<Web-Server-Public-IP-Address-or-Public-DNS-Name>/index.php
 - Password: password  
 
 
+=======
+>>>>>>> c9aa0ba6ec44437153ca7bf0eb7ac147d1da8147
