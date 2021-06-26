@@ -72,3 +72,6 @@ sudo certbot renew --dry-run
 ```
 crontab -e
 ```
+```
+* */12 * * *   root /usr/bin/certbot renew > /dev/null 2>&1
+```
